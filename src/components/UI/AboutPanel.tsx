@@ -15,6 +15,7 @@ import {
   loadEmptySceneMapAction,
   addDownloadAction,
   updateDownloadAction,
+  onUploadAudioAction,
 } from '@zus/actions'
 import { getAsset } from '@utils/misc'
 import { MAP_NAME_SEARCH_MAP } from '@constants/mappings'
@@ -40,6 +41,17 @@ export const AboutPanel = () => {
     multiple: false,
   })
 
+  const {
+      open: openFileBrowserAudio,
+      getInputProps: getInputPropsAudio,
+      acceptedFiles: acceptedAudio,
+  } = useDropzone({
+      noClick: true,
+      noKeyboard: true,
+      maxFiles: 1,
+      multiple: false,
+  })
+
   const toggleUIPanel = () => {
     toggleUIPanelAction('Settings', false)
     toggleUIPanelAction('MatchKillfeed', false)
@@ -49,6 +61,10 @@ export const AboutPanel = () => {
 
   const onClickDropSelectFile = async () => {
     openFileBrowser()
+  }
+
+  const onClickDropSelectAudio = async () => {
+    openFileBrowserAudio() 
   }
 
   const onClickSampleDemo = async () => {
@@ -79,6 +95,10 @@ export const AboutPanel = () => {
   useEffect(() => {
     if (acceptedFiles.length > 0) onUploadDemoAction(acceptedFiles)
   }, [acceptedFiles, onUploadDemoAction])
+
+  useEffect(() => {
+    if (acceptedAudio.length > 0) onUploadAudioAction(acceptedAudio)
+  }, [acceptedAudio, onUploadAudioAction])
 
   return (
     <div className="flex items-start">
@@ -147,7 +167,7 @@ export const AboutPanel = () => {
 
           {/* Main CTAs */}
 
-          <div className="mt-8 flex items-center justify-center text-sm">
+            <div className="mt-8 grid grid-cols-2 gap-4 items-center justify-center text-sm">
             <input {...getInputProps()} />
             <button
               className="rounded-full border border-dashed px-3.5 py-1 transition-all hover:border-solid hover:bg-black hover:invert"
@@ -156,14 +176,21 @@ export const AboutPanel = () => {
               Drop/select <code>.dem</code> file
             </button>
 
-            <div className="mx-2">/</div>
-
             <button
               className="flex cursor-pointer items-center rounded-full bg-pp-accent-tertiary px-3.5 py-1 font-medium tracking-wide transition-all hover:bg-white hover:text-pp-accent-tertiary"
               onClick={onClickSampleDemo}
             >
               Load sample demo
             </button>
+            <input {...getInputPropsAudio()} /> 
+            <button
+                className="rounded-full border border-dashed px-3.5 py-1 transition-all hover:border-solid hover:bg-black hover:invert"
+                onClick={onClickDropSelectAudio}
+            >
+                Drop/select audio file
+            </button>
+
+
             {/* Spacer to make button look more balanced */}
             <div className="w-4" />
           </div>

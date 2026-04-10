@@ -37,6 +37,8 @@ export type InstanceState = {
   mapCenterPickerActive: boolean
   threeScene: THREE.Scene
   parsedDemo?: AsyncParser
+  audio: THREE.Audio
+  audioListener: THREE.AudioListener
   focusedObject?: THREE.Object3D
   lastFocusedPOV?: THREE.Object3D
   drawingCanvas?: CanvasDraw
@@ -49,6 +51,8 @@ export type InstanceState = {
   }
   setThreeScene: (threeScene: THREE.Scene) => void
   setParsedDemo: (parsedDemo: AsyncParser | undefined) => void
+  setAudio: (audio: THREE.Audio) => void
+  setAudioListener: (audioListener: THREE.AudioListener) => void
   setDrawingCanvas: (drawingCanvas: CanvasDraw) => void
   setFocusedObject: (focusedObject?: THREE.Object3D) => void
   setLastFocusedPOV: (lastFocusedPOV?: THREE.Object3D) => void
@@ -77,6 +81,8 @@ const useInstance = create<InstanceState>()(set => ({
   mapCenterPickerActive: false,
   threeScene: new THREE.Scene(),
   parsedDemo: undefined,
+  audio: new THREE.Audio(new THREE.AudioListener),
+  audioListener: new THREE.AudioListener(), //This is probably a bullshit way to assign these default values but i can't think of a better option
   focusedObject: undefined,
   lastFocusedPOV: undefined,
   drawingCanvas: undefined,
@@ -89,6 +95,8 @@ const useInstance = create<InstanceState>()(set => ({
   },
   setThreeScene: (threeScene: THREE.Scene) => set({ threeScene }),
   setParsedDemo: (parsedDemo: AsyncParser | undefined) => set({ parsedDemo }),
+  setAudio: (audio: THREE.Audio ) => set({audio}),
+  setAudioListener: (audioListener: THREE.AudioListener ) => set({audioListener}),
   setDrawingCanvas: (drawingCanvas: CanvasDraw) => set({ drawingCanvas }),
   setFocusedObject: (focusedObject?: THREE.Object3D) => set({ focusedObject }),
   setLastFocusedPOV: (lastFocusedPOV?: THREE.Object3D) => set({ lastFocusedPOV }),
@@ -124,6 +132,12 @@ export type StoreState = {
     status: ParserStatus
     progress: number
     error?: Error
+  }
+  audioParser: {
+    status: ParserStatus
+    //IDK how to get progress on the audio parsing i'm sorry ;(
+    error?: Error
+    audioLoaded: boolean
   }
   scene: {
     players: Map<any, any>
@@ -210,7 +224,11 @@ export const initialState: StoreState = {
     progress: 0,
     error: undefined,
   },
-
+  audioParser: {
+    status: ParserStatus.INIT,
+    error: undefined,
+    audioLoaded: false,
+  },
   scene: {
     players: new Map(),
     map: 'cp_snakewater',

@@ -67,7 +67,51 @@ export const parseDemoAction = async (fileBuffer: ArrayBuffer) => {
   } catch (error) {
     dispatch({ type: 'PARSE_DEMO_ERROR', payload: error })
     throw error
-  }
+    } 
+}
+//
+// ─── AUDIO PARSER ─────────────────────────────────────────────────────────────── 
+//
+
+export const onUploadAudioAction = async ( files: File[] ) => {
+   const audioFile: File = files[0]
+   const reader = new FileReader();
+   reader.readAsArrayBuffer(audioFile)
+
+   reader.onload = function () {
+        const fileBuffer = reader.result as ArrayBuffer
+        parseAudioAction(fileBuffer);
+   }
+
+}
+
+export const parseAudioAction = async (fileBuffer: ArrayBuffer) => {
+    try {
+    dispatch({ type: 'PARSE_AUDIO_INIT'})
+
+    let audioCTX = THREE.AudioContext.getContext()
+    let audioBuffer = await audioCTX.decodeAudioData(fileBuffer)
+    
+    console.log('%c----- Audio File Parsed -----', 'color: orange; font-size: 16px')
+    console.log(audioBuffer)
+    console.log('%c-----------------------------', 'color: orange; font-size: 16px;')
+   
+    dispatch({ type: 'PARSE_AUDIO_SUCCESS' })
+ 
+    } catch (error) {
+        dispatch({ type: 'PARSE_AUDIO_ERROR', payload: error})
+        throw error
+    }
+
+}
+
+
+export const setupAudioPlayback = async (audioBuffer: AudioBuffer) => {
+
+    useInstance.getState().setAudioBuffer(audioBuffer); 
+   //Might be unnecessary IDEK how this implementation is going to work LOL
+    getState().audioParser.audioLoaded = true;
+    
 }
 
 //
