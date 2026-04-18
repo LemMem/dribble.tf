@@ -22,6 +22,7 @@ import { StickerDragKind } from './drawing'
 
 import { dispatch, getState, initialState, StoreState, useInstance } from './store'
 import { isMobile } from 'react-device-detect'
+import { Instance } from '@react-three/drei'
 
 //
 // ─── PARSER ─────────────────────────────────────────────────────────────────────
@@ -67,51 +68,59 @@ export const parseDemoAction = async (fileBuffer: ArrayBuffer) => {
   } catch (error) {
     dispatch({ type: 'PARSE_DEMO_ERROR', payload: error })
     throw error
-    } 
+  }
 }
 //
-// ─── AUDIO PARSER ─────────────────────────────────────────────────────────────── 
+// ─── AUDIO PARSER ───────────────────────────────────────────────────────────────
 //
 
-export const onUploadAudioAction = async ( files: File[] ) => {
-   const audioFile: File = files[0]
-   const reader = new FileReader();
-   reader.readAsArrayBuffer(audioFile)
+export const onUploadAudioAction = async (files: File[]) => {
+  const audioFile: File = files[0]
+  const reader = new FileReader()
+  reader.readAsArrayBuffer(audioFile)
 
-   reader.onload = function () {
-        const fileBuffer = reader.result as ArrayBuffer
-        parseAudioAction(fileBuffer);
-   }
-
+  reader.onload = function () {
+    const fileBuffer = reader.result as ArrayBuffer
+    parseAudioAction(fileBuffer)
+  }
 }
 
 export const parseAudioAction = async (fileBuffer: ArrayBuffer) => {
-    try {
-    dispatch({ type: 'PARSE_AUDIO_INIT'})
+  try {
+    dispatch({ type: 'PARSE_AUDIO_INIT' })
 
     let audioCTX = THREE.AudioContext.getContext()
     let audioBuffer = await audioCTX.decodeAudioData(fileBuffer)
-    
+
     console.log('%c----- Audio File Parsed -----', 'color: orange; font-size: 16px')
     console.log(audioBuffer)
     console.log('%c-----------------------------', 'color: orange; font-size: 16px;')
-   
-    dispatch({ type: 'PARSE_AUDIO_SUCCESS' })
- 
-    } catch (error) {
-        dispatch({ type: 'PARSE_AUDIO_ERROR', payload: error})
-        throw error
-    }
 
+    setupAudioPlaybackAction(audioBuffer)
+
+    dispatch({ type: 'PARSE_AUDIO_SUCCESS' })
+  } catch (error) {
+    dispatch({ type: 'PARSE_AUDIO_ERROR', payload: error })
+    throw error
+  }
 }
 
+export const setupAudioPlaybackAction = async (audioBuffer: AudioBuffer) => {
+  if (getState().audioParser.listenerAttached == false) {
+    ;(useInstance.getState().threeScene as THREE.Scene & { camera?: THREE.Camera }).camera?.add(
+      useInstance.getState().audioListener
+    )
+    getState().audioParser.listenerAttached = true
+  }
 
-export const setupAudioPlayback = async (audioBuffer: AudioBuffer) => {
-
-    useInstance.getState().setAudioBuffer(audioBuffer); 
-   //Might be unnecessary IDEK how this implementation is going to work LOL
-    getState().audioParser.audioLoaded = true;
-    
+  const soundToLoad: THREE.Audio = new THREE.Audio(useInstance.getState().audioListener)
+  soundToLoad.setBuffer(audioBuffer)
+  soundToLoad.setLoop(false)
+  soundToLoad.setVolume(0.5)
+  //Purely for debugging purposes
+  soundToLoad.play()
+  //Might be unnecessary IDEK how this implementation is going to work LOL
+  getState().audioParser.audioLoaded = true
 }
 
 //
@@ -166,14 +175,11 @@ export const loadEmptySceneMapAction = async (mapName: string) => {
     const worldBounds = await fetchMapWorldBounds(mapName)
     const overrides = getMapBoundaries(mapName)
 
-    const boundaries = worldBounds
-      ? { ...overrides, ...worldBounds }
-      : overrides
+    const boundaries = worldBounds ? { ...overrides, ...worldBounds } : overrides
     const mapKey = getMapBoundariesKey(mapName) ?? mapName
     const savedRtsCenter = getState().settings.scene.rtsCenters[mapKey]
-    const boundariesWithCenter = savedRtsCenter && boundaries
-      ? { ...boundaries, rtsCenter: savedRtsCenter }
-      : boundaries
+    const boundariesWithCenter =
+      savedRtsCenter && boundaries ? { ...boundaries, rtsCenter: savedRtsCenter } : boundaries
 
     if (!boundariesWithCenter?.boundaryMin || !boundariesWithCenter?.boundaryMax) {
       alert('Unable to load map. Could not determine map boundaries.')
@@ -497,8 +503,7 @@ export const updateSettingsOptionAction = async (option: string, value: any) => 
 
 export const toggleMapCenterPickerAction = async (active?: boolean) => {
   try {
-    const nextActive =
-      active !== undefined ? active : !useInstance.getState().mapCenterPickerActive
+    const nextActive = active !== undefined ? active : !useInstance.getState().mapCenterPickerActive
     useInstance.getState().setMapCenterPickerActive(nextActive)
   } catch (error) {
     console.error(error)

@@ -35,28 +35,28 @@ const reducers = (state: StoreState, action: StoreAction) => {
         ...state,
         parser: { ...state.parser, status: 'done', error: action.payload },
       }
-    
+
     //
     // ─── AUDIO PARSER ────────────────────────────────────────────────
     //
-    
+
     case 'PARSE_AUDIO_INIT':
-        return {
+      return {
         ...state,
-       audioParser: { ...state.audioParser, status: 'loading', progress: 0, error: null}
-    }
+        audioParser: { ...state.audioParser, status: 'loading', progress: 0, error: null },
+      }
 
     case 'PARSE_AUDIO_SUCCESS':
-        return {
+      return {
         ...state,
         audioParser: { ...state.audioParser, status: 'done', progress: 100 },
-    }
+      }
 
     case 'PARSE_AUDIO_ERROR':
-        return {
+      return {
         ...state,
-        audioParser: { ...state.audioParser, status: 'done', error: action.payload}
-    }
+        audioParser: { ...state.audioParser, status: 'done', error: action.payload },
+      }
 
     //
     // ─── SCENE ───────────────────────────────────────────────────────

@@ -52,7 +52,6 @@ export type InstanceState = {
   setThreeScene: (threeScene: THREE.Scene) => void
   setParsedDemo: (parsedDemo: AsyncParser | undefined) => void
   setAudio: (audio: THREE.Audio) => void
-  setAudioListener: (audioListener: THREE.AudioListener) => void
   setDrawingCanvas: (drawingCanvas: CanvasDraw) => void
   setFocusedObject: (focusedObject?: THREE.Object3D) => void
   setLastFocusedPOV: (lastFocusedPOV?: THREE.Object3D) => void
@@ -81,8 +80,8 @@ const useInstance = create<InstanceState>()(set => ({
   mapCenterPickerActive: false,
   threeScene: new THREE.Scene(),
   parsedDemo: undefined,
-  audio: new THREE.Audio(new THREE.AudioListener),
-  audioListener: new THREE.AudioListener(), //This is probably a bullshit way to assign these default values but i can't think of a better option
+  audio: new THREE.Audio(new THREE.AudioListener()),
+  audioListener: new THREE.AudioListener(),
   focusedObject: undefined,
   lastFocusedPOV: undefined,
   drawingCanvas: undefined,
@@ -95,8 +94,7 @@ const useInstance = create<InstanceState>()(set => ({
   },
   setThreeScene: (threeScene: THREE.Scene) => set({ threeScene }),
   setParsedDemo: (parsedDemo: AsyncParser | undefined) => set({ parsedDemo }),
-  setAudio: (audio: THREE.Audio ) => set({audio}),
-  setAudioListener: (audioListener: THREE.AudioListener ) => set({audioListener}),
+  setAudio: (audio: THREE.Audio) => set({ audio }),
   setDrawingCanvas: (drawingCanvas: CanvasDraw) => set({ drawingCanvas }),
   setFocusedObject: (focusedObject?: THREE.Object3D) => set({ focusedObject }),
   setLastFocusedPOV: (lastFocusedPOV?: THREE.Object3D) => set({ lastFocusedPOV }),
@@ -137,6 +135,7 @@ export type StoreState = {
     status: ParserStatus
     //IDK how to get progress on the audio parsing i'm sorry ;(
     error?: Error
+    listenerAttached: boolean
     audioLoaded: boolean
   }
   scene: {
@@ -227,6 +226,7 @@ export const initialState: StoreState = {
   audioParser: {
     status: ParserStatus.INIT,
     error: undefined,
+    listenerAttached: true,
     audioLoaded: false,
   },
   scene: {

@@ -42,14 +42,14 @@ export const AboutPanel = () => {
   })
 
   const {
-      open: openFileBrowserAudio,
-      getInputProps: getInputPropsAudio,
-      acceptedFiles: acceptedAudio,
+    open: openFileBrowserAudio,
+    getInputProps: getInputPropsAudio,
+    acceptedFiles: acceptedAudio,
   } = useDropzone({
-      noClick: true,
-      noKeyboard: true,
-      maxFiles: 1,
-      multiple: false,
+    noClick: true,
+    noKeyboard: true,
+    maxFiles: 1,
+    multiple: false,
   })
 
   const toggleUIPanel = () => {
@@ -64,7 +64,7 @@ export const AboutPanel = () => {
   }
 
   const onClickDropSelectAudio = async () => {
-    openFileBrowserAudio() 
+    openFileBrowserAudio()
   }
 
   const onClickSampleDemo = async () => {
@@ -167,7 +167,7 @@ export const AboutPanel = () => {
 
           {/* Main CTAs */}
 
-            <div className="mt-8 grid grid-cols-2 gap-4 items-center justify-center text-sm">
+          <div className="mt-8 grid grid-cols-2 items-center justify-center gap-4 text-sm">
             <input {...getInputProps()} />
             <button
               className="rounded-full border border-dashed px-3.5 py-1 transition-all hover:border-solid hover:bg-black hover:invert"
@@ -182,14 +182,13 @@ export const AboutPanel = () => {
             >
               Load sample demo
             </button>
-            <input {...getInputPropsAudio()} /> 
+            <input {...getInputPropsAudio()} />
             <button
-                className="rounded-full border border-dashed px-3.5 py-1 transition-all hover:border-solid hover:bg-black hover:invert"
-                onClick={onClickDropSelectAudio}
+              className="rounded-full border border-dashed px-3.5 py-1 transition-all hover:border-solid hover:bg-black hover:invert"
+              onClick={onClickDropSelectAudio}
             >
-                Drop/select audio file
+              Drop/select audio file
             </button>
-
 
             {/* Spacer to make button look more balanced */}
             <div className="w-4" />

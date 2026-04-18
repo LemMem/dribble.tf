@@ -573,7 +573,6 @@ class DemoViewer extends Component<DemoViewerProps> {
       const scene = useInstance.getState().threeScene
       const camera = (scene as THREE.Scene & { camera?: THREE.Camera }).camera
       const domElement = event.currentTarget.querySelector('canvas')
-
       if (!camera || !domElement) {
         return
       }
